@@ -1,0 +1,6 @@
+{
+  "name": "S8 Baccarat Formula AI",
+  "description": "Ứng dụng Công Thức Baccarat S8 AI prediction engine siêu mượt mà.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
