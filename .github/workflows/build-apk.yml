@@ -1,0 +1,60 @@
+name: Build Debug APK
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Unzip project source
+        run: |
+          ZIPFILE=$(ls *.zip | head -n1)
+          unzip -o "$ZIPFILE" -d proj
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Ensure Gradle wrapper exists
+        working-directory: proj
+        run: |
+          if [ ! -f gradlew ]; then
+            gradle wrapper --gradle-version 8.11
+          fi
+          chmod +x gradlew
+
+      - name: Build debug APK
+        working-directory: proj
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Rename APK
+        run: cp proj/app/build/outputs/apk/debug/app-debug.apk proj/app/build/outputs/apk/debug/S8-Baccarat-Formula-AI.apk
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: proj/app/build/outputs/apk/debug/S8-Baccarat-Formula-AI.apk
+
+      - name: Publish stable download link
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest-apk
+          name: "Latest Debug APK"
+          files: proj/app/build/outputs/apk/debug/S8-Baccarat-Formula-AI.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
