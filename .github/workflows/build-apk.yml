@@ -17,9 +17,8 @@ jobs:
 
       - name: Unzip project source
         run: |
-          ZIPFILE=$(ls *.zip | head -n1)
+          ZIPFILE=$(ls *.zip *.ZIP *.Zip 2>/dev/null | head -n1)
           unzip -o "$ZIPFILE" -d proj
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
